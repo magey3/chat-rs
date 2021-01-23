@@ -15,5 +15,17 @@ function sendMessage() {
 	return true;
 }
 
-var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
-console.log(data);
+function renderMessages(){
+	var par = document.getElementById("messages");
+	var messages = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
+	for(var i = 0; i < messages.messages.length; i++) {
+		var el = document.createElement("div");
+		var text = document.createTextNode(messages.messages[i].content);
+		el.appendChild(text);
+		par.appendChild(el);
+	}
+}
+
+//var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
+//console.log(data);
+renderMessages();

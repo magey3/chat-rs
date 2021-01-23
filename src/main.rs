@@ -59,7 +59,7 @@ async fn send_message(item: web::Form<ReceivedMessage>) -> impl Responder {
 		.execute(&c)
 		.expect("Error saving new post");
 		
-	HttpResponse::Ok()
+	HttpResponse::Ok().body("<script>window.location.replace('https://localhost:8080/');</script>")
 }
 
 #[actix_web::main]
