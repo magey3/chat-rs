@@ -7,5 +7,13 @@ function httpPOST(url, payload){
 	return r.responseText;
 }
 
-var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 1}));
+function sendMessage() {
+	var date = new Date();
+	console.log(date.toISOString());
+	document.getElementById("time").value = date.toISOString();
+	document.getElementById("id").value = 1;
+	return true;
+}
+
+var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
 console.log(data);

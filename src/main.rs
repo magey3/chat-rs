@@ -23,11 +23,6 @@ async fn get_messages(item: web::Json<MessageRequest>) -> impl Responder {
 	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
 
-	//diesel::insert_into(users)
-	//	.values(NewUser {name: "John Doe", username: "lomox_123"})
-	//	.execute(&c)
-	//	.expect("Error saving new post");
-
 	let message_v = messages
 		.limit(item.amount)
 		.load::<SqlMessage>(&c)
@@ -51,7 +46,19 @@ async fn get_messages(item: web::Json<MessageRequest>) -> impl Responder {
 }
 
 #[post("/")]
-async fn send_message(_item: web::Form<Message>) -> impl Responder {
+async fn send_message(item: web::Form<ReceivedMessage>) -> impl Responder {
+
+	use crate::schema::messages::dsl::*;
+	dotenv().ok();
+
+	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
+	//TODO check if the user exists
+	diesel::insert_into(messages)
+		.values(InsertSqlMessage {content: item.content.to_owned(), time: Utc::now().naive_utc(), userid: item.id})
+		.execute(&c)
+		.expect("Error saving new post");
+		
 	HttpResponse::Ok()
 }
 
@@ -64,6 +71,7 @@ async fn main() -> std::io::Result<()> {
 	HttpServer::new(|| {
 		App::new()
 			.service(get_messages)
+			.service(send_message)
 			.service(Files::new("/", "./static/").index_file("index.html"))
 	})
 		.bind_openssl("127.0.0.1:8080", ssl)?

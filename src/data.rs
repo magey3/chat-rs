@@ -23,10 +23,17 @@ pub struct JsonResponse {
 	pub messages: Vec<Message>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct Message {
 	pub content: String,
 	pub user: User,
+	pub time: DateTime<Utc>,
+}
+
+#[derive(Deserialize)]
+pub struct ReceivedMessage {
+	pub content: String,
+	pub id: i32,
 	pub time: DateTime<Utc>,
 }
 
