@@ -1,25 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Hello World</title>
+		<title>hello world</title>
 		<link rel="preconnect" href="https://fonts.gstatic.com">
-		<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css2?family=montserrat&display=swap" rel="stylesheet"> 
+		<script src="https://unpkg.com/vue@3.0.5"></script>
 		<link href="/style.css" type="text/css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="topbar">
-			<h1>TITLE</h1>
+			<h1>title</h1>
 		</div>
 		<div class="maincontent">
-			<div class="leftbar">Test too</div>
+			<div class="leftbar">test too</div>
 			<div class="chatwindow">
-				<div id="messages"></div>
-				<form onsubmit="javascript:sendMessage()" method="POST" content-type="application/x-www-form-urlencoded">
-					<input type="text" name="content">
+				<div id="messages">
+					<div v-for="item in items"><b class="messagename">{{item.user.name}}: </b>{{ item.content }}</div>
+				</div>
+				<div class="grow-vert"></div>
+				<form class="messagesend" onsubmit="javascript:sendMessage()" method="POST" content-type="application/x-www-form-urlencoded">
+					<input type="text" name="content" class="messageinput">
 					<input type="hidden" name="id" id="id" style="display: none">
 					<input type="hidden" name="time" id="time">
-					<input type="submit">
+					<input type="submit" class="messagesentbutton">
 				</form>
 			</div>
 		</div>

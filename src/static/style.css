@@ -31,9 +31,29 @@ body {
 }
 .chatwindow {
 	margin-left: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
 	flex: 5;
 	background-color: #3b3b3b;
-	height: 100%;
+	height: auto;
+}
+
+.grow-vert {
+	flex-grow: 1;
+}
+
+.messagename {
+	color: green;
+}
+
+.messagesend {
+	display: flex;
+}
+.messageinput {
+	flex: 9;
+	margin-right: 10px;
+}
+.messagesendbutton {
+	flex: 1;
 }

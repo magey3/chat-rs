@@ -26,6 +26,15 @@ function renderMessages(){
 	}
 }
 
+const Messages = {
+	data() {
+		return {
+			items: JSON.parse(httpPOST("/json", {index: 1, amount: 25})).messages
+		}
+	}
+}
+console.log(JSON.parse(httpPOST("/json", {index: 1, amount: 25})).messages);
 //var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
 //console.log(data);
-renderMessages();
+//renderMessages();
+Vue.createApp(Messages).mount("#messages");
