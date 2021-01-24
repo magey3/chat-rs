@@ -15,17 +15,6 @@ function sendMessage() {
 	return true;
 }
 
-function renderMessages(){
-	var par = document.getElementById("messages");
-	var messages = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
-	for(var i = 0; i < messages.messages.length; i++) {
-		var el = document.createElement("div");
-		var text = document.createTextNode(messages.messages[i].content);
-		el.appendChild(text);
-		par.appendChild(el);
-	}
-}
-
 const Messages = {
 	data() {
 		return {
@@ -33,8 +22,4 @@ const Messages = {
 		}
 	}
 }
-console.log(JSON.parse(httpPOST("/json", {index: 1, amount: 25})).messages);
-//var data = JSON.parse(httpPOST("https://localhost:8080/json", {index: 1, amount: 25}));
-//console.log(data);
-//renderMessages();
 Vue.createApp(Messages).mount("#messages");
