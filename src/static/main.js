@@ -18,8 +18,21 @@ function sendMessage() {
 const Messages = {
 	data() {
 		return {
-			items: JSON.parse(httpPOST("/json", {index: 1, amount: 25})).messages
+			items: JSON.parse(httpPOST("/json", {index: 1, amount: 100})).messages
 		}
+	},
+	methods: {
+		pollData () {
+			items: setInterval(() => {
+				this.items = JSON.parse(httpPOST("/json", {index: 1, amount: 100})).messages
+			}, 3000)
+		}
+	},
+	beforeUnmount: function (){
+		clearInterval(items)
+	},
+	created: function () {
+		this.pollData()
 	}
 }
 Vue.createApp(Messages).mount("#messages");
