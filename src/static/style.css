@@ -19,6 +19,7 @@ body {
 .maincontent {
 	display: flex;
 	height: 88vh;
+	max-height: 88vh;
 }
 
 .leftbar {
@@ -37,17 +38,24 @@ body {
 	flex: 5;
 	background-color: #3b3b3b;
 	height: auto;
+	max-height: inherit;
 }
 
 .grow-vert {
 	flex-grow: 1;
 }
 
+.messages {
+	overflow-y: auto;
+	max-height: inherit;
+}
+
 .messagename {
-	color: green;
+	color: lime;
 }
 
 .messagesend {
+	margin-top: 10px;
 	display: flex;
 }
 .messageinput {
