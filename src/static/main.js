@@ -36,3 +36,5 @@ const Messages = {
 	}
 }
 Vue.createApp(Messages).mount("#messages");
+var messages = document.getElementById("messages");
+messages.scrollTop = messages.scrollHeight;
