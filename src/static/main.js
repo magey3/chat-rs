@@ -7,15 +7,13 @@ function httpPOST(url, payload){
 	return r.responseText;
 }
 
-var userid = 1;
+var userid;
+var password;
 
 window.addEventListener("load", function () {
 	function sendMessage() {
 		var date = new Date();
 		var r = new XMLHttpRequest();
-		//r.addEventListener("load", function(event) {
-		//	alert(event.target.responseText);
-		//});
 		r.addEventListener("error", function(event) {
 			alert("Error");
 		});
@@ -24,23 +22,29 @@ window.addEventListener("load", function () {
 		r.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		if(userid == null){
 			alert("You are not logged in");
+		} else if(password == null) {
+			alert("You are not logged in");
 		}
-		const data = "content=" + content + "&id=" + userid + "&time=" + date.toISOString();
+		const data = "content=" + content + "&id=" + userid + "&time=" + date.toISOString() + "&password=" + password;
 		r.send(data);
 	}
 	function login() {
+		var email = document.getElementById("email").value;
+		var pass = document.getElementById("password").value;
+
 		var r = new XMLHttpRequest();
+
 		r.addEventListener("load", function(event) {
 			userid = JSON.parse(event.target.responseText).id;
+			password = pass;
 		});
 		r.addEventListener("error", function(event) {
 			alert("Error");
 		});
+
 		r.open("POST", "/login");
-		var email = document.getElementById("email").value;
-		var password = document.getElementById("password").value;
 		r.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		const data = "email=" + email + "&password=" + password; 
+		const data = "email=" + email + "&password=" + pass;
 		r.send(data);
 	}
 	const _login = document.getElementById("login");

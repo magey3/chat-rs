@@ -8,7 +8,7 @@ sql_function!(gen_salt, gen_salt_t, (_type: Text) -> Text);
 
 pub fn hashed_insert_user(user: NewUser, c: &PgConnection) -> Result<SqlUser, diesel::result::Error> {
 	use crate::schema::users::dsl::*;
-	
+
 	if user.password.len() > 72 {
 		panic!("Password more than 72 bytes and is not supported");
 	}
@@ -21,13 +21,26 @@ pub fn hashed_insert_user(user: NewUser, c: &PgConnection) -> Result<SqlUser, di
 		.get_result::<SqlUser>(c)
 }
 
+pub fn authorize_message(message: ReceivedMessage, c: &PgConnection) -> bool {
+	use crate::schema::users::dsl::*;
+
+	if message.password.len() > 72 {
+		panic!("Password too long");
+	}
+
+	users.filter(id.eq(message.id))
+		.filter(password.eq(crypt(message.password, password)))
+		.load::<SqlUser>(c)
+		.expect("Error authenticating")[0].id == message.id
+}
+
 pub fn authorize(pass: &str, mail: &str, c: &PgConnection) -> SqlUser {
 	use crate::schema::users::dsl::*;
 
 	if pass.len() > 72 {
 		panic!("Password too long");
 	}
-	
+
 	users.filter(email.eq(mail))
 		.filter(password.eq(crypt(pass, password)))
 		.load::<SqlUser>(c)

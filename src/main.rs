@@ -6,7 +6,7 @@ mod schema;
 mod db;
 
 use actix_files::Files;
-use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{post, web, App, HttpResponse, http::StatusCode, dev::HttpResponseBuilder, HttpServer, Responder};
 use crate::data::*;
 use chrono::prelude::*;
 use diesel::prelude::*;
@@ -55,6 +55,10 @@ async fn send_message(item: web::Form<ReceivedMessage>) -> impl Responder {
 	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
 
+	if !crate::db::authorize_message(ReceivedMessage { content: item.content.to_owned(), id: item.id, password: item.password.to_owned(), time: item.time}, &c) {
+		return HttpResponseBuilder::new(StatusCode::UNAUTHORIZED);
+	}
+
 	//TODO check if the user exists
 	diesel::insert_into(messages)
 		.values(InsertSqlMessage {content: item.content.to_owned(), time: Utc::now().naive_utc(), userid: item.id})
@@ -80,7 +84,7 @@ async fn login(item: web::Form<LoginInfo>) -> impl Responder{
 
 	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
-	
+
 	let user = crate::db::authorize(&item.password, &item.email, &c);
 
 	HttpResponse::Ok().json(UserReference::from(user))

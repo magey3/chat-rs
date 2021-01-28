@@ -57,6 +57,7 @@ pub struct ReceivedMessage {
 	pub content: String,
 	pub id: i32,
 	pub time: DateTime<Utc>,
+	pub password: String,
 }
 
 #[derive(Queryable)]
