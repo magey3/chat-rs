@@ -19,11 +19,21 @@
 					<div v-for="item in items"><b class="messagename">{{item.user.name}}: </b>{{ item.content }}</div>
 				</div>
 				<div class="grow-vert"></div>
-				<form class="messagesend" onsubmit="javascript:sendMessage()" method="POST" content-type="application/x-www-form-urlencoded">
-					<input type="text" name="content" class="messageinput">
-					<input type="hidden" name="id" id="id" style="display: none">
-					<input type="hidden" name="time" id="time">
+				<form class="messagesend" id="messagesend">
+					<input type="text" name="content" id="content" class="messageinput">
 					<input type="submit" class="messagesentbutton">
+				</form>
+				<form id="login">
+					<input type="text" name="email" id="email">
+					<input type="password" name="password" id="password">
+					<input type="submit">
+				</form>
+				<form method="POST" content-type="application/x-www-form-urlencoded" onsubmit="javascript:register()">
+					<input type="text" name="name">
+					<input type="text" name="username">
+					<input type="text" name="email">
+					<input type="password" name="password">
+					<input type="submit">
 				</form>
 			</div>
 		</div>

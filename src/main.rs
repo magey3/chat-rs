@@ -3,6 +3,7 @@ extern crate diesel;
 
 mod data;
 mod schema;
+mod db;
 
 use actix_files::Files;
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
@@ -34,10 +35,10 @@ async fn get_messages(item: web::Json<MessageRequest>) -> impl Responder {
 		let dt_tz = tz.from_local_datetime(&i.time).unwrap();
 		out.messages.push(Message {
 			content: i.content,
-			user: users
+			user: UserReference::from(users
 				.filter(crate::schema::users::dsl::id.eq(i.userid))
-				.load::<User>(&c)
-				.expect("Failed to get user")[0].clone(),
+				.load::<SqlUser>(&c)
+				.expect("Failed to get user")[0].to_owned()),
 			time: Utc.from_utc_datetime(&dt_tz.naive_utc())
 		});
 	}
@@ -53,13 +54,36 @@ async fn send_message(item: web::Form<ReceivedMessage>) -> impl Responder {
 
 	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
+
 	//TODO check if the user exists
 	diesel::insert_into(messages)
 		.values(InsertSqlMessage {content: item.content.to_owned(), time: Utc::now().naive_utc(), userid: item.id})
 		.execute(&c)
 		.expect("Error saving new post");
 		
-	HttpResponse::Ok().body("<script>window.location.replace('https://localhost:8080/');</script>")
+	HttpResponse::Ok()
+}
+
+#[post("/register")]
+async fn register(item: web::Form<NewUser>) -> impl Responder{
+	dotenv().ok();
+
+	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
+	
+	HttpResponse::Ok().json(UserReference::from(crate::db::hashed_insert_user(item.into_inner(), &c).expect("Error inserting new user")))
+}
+
+#[post("/login")]
+async fn login(item: web::Form<LoginInfo>) -> impl Responder{
+	dotenv().ok();
+
+	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+	let c = PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url));
+	
+	let user = crate::db::authorize(&item.password, &item.email, &c);
+
+	HttpResponse::Ok().json(UserReference::from(user))
 }
 
 #[actix_web::main]
@@ -72,6 +96,8 @@ async fn main() -> std::io::Result<()> {
 		App::new()
 			.service(get_messages)
 			.service(send_message)
+			.service(login)
+			.service(register)
 			.service(Files::new("/", "./static/").index_file("index.html"))
 	})
 		.bind_openssl("127.0.0.1:8080", ssl)?

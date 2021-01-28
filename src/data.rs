@@ -4,18 +4,28 @@ use chrono::prelude::*;
 use crate::schema::users;
 use crate::schema::messages;
 
-#[derive(Insertable)]
+#[derive(Insertable, Deserialize)]
 #[table_name="users"]
-pub struct NewUser<'a> {
-	pub name: &'a str,
-	pub username: &'a str,
+pub struct NewUser {
+	pub name: String,
+	pub username: String,
+	pub password: String,
+	pub email: String,
 }
 
 #[derive(Clone, Queryable, Deserialize, Serialize)]
-pub struct User {
+pub struct SqlUser {
 	pub id: i32,
 	pub name: String,
 	pub username: String,
+	pub password: String,
+	pub email: String,
+}
+
+#[derive(Deserialize)]
+pub struct LoginInfo {
+	pub email: String,
+	pub password: String,
 }
 
 #[derive(Serialize)]
@@ -23,10 +33,22 @@ pub struct JsonResponse {
 	pub messages: Vec<Message>,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct UserReference {
+	pub id: i32,
+	pub name: String,
+	pub username: String,
+}
+impl UserReference {
+	pub fn from(x: SqlUser) -> UserReference {
+		UserReference {id: x.id, name: x.name, username: x.username}
+	}
+}
+
 #[derive(Serialize)]
 pub struct Message {
 	pub content: String,
-	pub user: User,
+	pub user: UserReference,
 	pub time: DateTime<Utc>,
 }
 
