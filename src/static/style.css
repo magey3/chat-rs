@@ -6,6 +6,10 @@ body {
 	font-family: Montserrat, sans-serif;
 }
 
+.logo {
+	height: 100%;
+}
+
 .topbar {
 	background-color: #3b3b3b;
 	margin-top: 0px;
@@ -18,8 +22,8 @@ body {
 
 .maincontent {
 	display: flex;
-	height: 88vh;
-	max-height: 88vh;
+	height: 90vh;
+	max-height: 90vh;
 }
 
 .leftbar {
