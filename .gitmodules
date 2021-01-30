@@ -1,0 +1,3 @@
+[submodule "chat-rs-frontend"]
+	path = chat-rs-frontend
+	url = https://github.com/magey3/chat-rs-frontend.git
